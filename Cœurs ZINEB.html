@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Cœur ZINEB</title>
+  <style>
+    /* ===== CSS ===== */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --fond: #fff1f4;
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) { --fond: #2a0a14; }
+    }
+    :root[data-theme="dark"] { --fond: #2a0a14; }
+    html { height: 100%; }
+
+    body {
+      min-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--fond);
+      overflow: hidden;
+    }
+
+    .coeur {
+      display: flex;
+      flex-wrap: wrap;
+      align-content: center;
+      justify-content: center;
+      gap: 2px 8px;
+      padding: 24px 14px;
+      overflow: hidden;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 14px;
+      line-height: 1.25;
+      color: rgba(76, 5, 25, 0.65);
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(160deg, var(--c1, #fb7185), var(--c2, #e11d48));
+      clip-path: path("M150 260 C30 180 10 70 80 30 C115 10 148 35 150 60 C152 35 185 10 220 30 C290 70 270 180 150 260 Z");
+    }
+
+    .nom {
+      position: absolute;
+      top: 46%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 44px;
+      font-weight: bold;
+      letter-spacing: 4px;
+      color: #ffffff;
+      text-shadow: 0 2px 8px rgba(76, 5, 25, 0.85);
+      user-select: none;
+    }
+
+    /* Les cœurs créés par le bouton */
+    .cree {
+      position: fixed;
+      width: 300px;
+      height: 270px;
+      transform-origin: top left;
+      transform: scale(var(--s, 0.4));
+      animation: apparition 0.5s ease-out;
+      z-index: 1;
+    }
+
+    /* Le battement du cœur */
+    .battant {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      animation: battement 1.2s ease-in-out infinite;
+    }
+
+    @keyframes battement {
+      0%, 100% { transform: scale(1); }
+      15%      { transform: scale(1.12); }
+      30%      { transform: scale(1); }
+      45%      { transform: scale(1.08); }
+    }
+
+    /* Le bouton */
+    .bouton {
+      position: fixed;
+      bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      padding: 14px 28px;
+      font-size: 18px;
+      font-family: Georgia, "Times New Roman", serif;
+      color: #ffffff;
+      background: #be123c;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .bouton:hover  { background: #9f1239; }
+    .bouton:active { transform: translateX(-50%) scale(0.95); }
+    .bouton:focus-visible { outline: 3px solid #1e1b4b; outline-offset: 3px; }
+
+    @keyframes apparition {
+      from { opacity: 0; transform: scale(0); }
+      to   { opacity: 1; transform: scale(var(--s, 0.4)); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cree, .battant { animation: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== HTML ===== -->
+  <button class="bouton" id="bouton" type="button">TAPE</button>
+
+  <script>
+    // ===== JAVASCRIPT =====
+    const bouton = document.getElementById("bouton");
+
+    // "Je t'aime" dans plusieurs langues
+    const langues = [
+      "Je t'aime", "I love you", "Ana kanbghik", "Te quiero", "Ti amo",
+      "Ich liebe dich", "Seni seviyorum", "Eu te amo", "أحبك", "愛してる",
+      "我爱你", "Я тебя люблю", "Σ'αγαπώ", "Ik hou van je"
+    ];
+
+    // Mélange une liste au hasard
+    function melanger(liste) {
+      return liste.slice().sort(function () { return Math.random() - 0.5; });
+    }
+
+    // Nombre aléatoire entre min et max
+    function hasard(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    // Crée un nouveau cœur à une place aléatoire, avec le nom ZINEB
+    function creerCoeur() {
+      const taille = hasard(0.5, 0.85);          // taille du cœur
+      const teinte = hasard(320, 365) % 360;    // du rose au rouge
+
+      const conteneur = document.createElement("div");
+      conteneur.className = "cree";
+      conteneur.style.setProperty("--s", taille);
+      conteneur.style.setProperty("--c1", "hsl(" + teinte + ", 90%, 70%)");
+      conteneur.style.setProperty("--c2", "hsl(" + teinte + ", 80%, 45%)");
+
+      // Position aléatoire, sans sortir de l'écran
+      const largeur = 300 * taille;
+      const hauteur = 270 * taille;
+      const x = hasard(0, Math.max(0, window.innerWidth - largeur));
+      const y = hasard(0, Math.max(0, window.innerHeight - hauteur - 90));
+      conteneur.style.left = x + "px";
+      conteneur.style.top = y + "px";
+
+      const coeur = document.createElement("div");
+      coeur.className = "coeur";
+
+      // Le cœur est fabriqué avec des "Je t'aime" dans plusieurs langues
+      const mots = melanger(langues.concat(langues, langues, langues));
+      mots.forEach(function (texte) {
+        const mot = document.createElement("span");
+        mot.textContent = texte;
+        coeur.appendChild(mot);
+      });
+      const nom = document.createElement("div");
+      nom.className = "nom";
+      nom.textContent = "ZINEB";
+
+      // Ce conteneur fait battre le cœur (chaque cœur a son propre rythme)
+      const battant = document.createElement("div");
+      battant.className = "battant";
+      battant.style.animationDelay = "-" + hasard(0, 1.2) + "s";
+
+      battant.appendChild(coeur);
+      battant.appendChild(nom);
+      conteneur.appendChild(battant);
+      document.body.appendChild(conteneur);
+    }
+
+    // Au clic sur le bouton : on crée un cœur
+    bouton.addEventListener("click", creerCoeur);
+  </script>
+
+</body>
+</html>
